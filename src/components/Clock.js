@@ -1,6 +1,15 @@
 import React from 'react';
 import { debug } from 'util';
+import styled from 'styled-components';
 
+const ClockStyled = styled.span`
+    margin: 10px;
+`
+const Container = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+`
 class Clock extends React.Component{
     constructor(props) {
         super(props);
@@ -42,12 +51,12 @@ class Clock extends React.Component{
     render() {
 
         return(
-            <div>
-                <div className="clock-days">{this.state.days} day{this.state.days > 1 ? "s" : ""}</div>
-                <div className="clock-hours">{this.addZero(this.state.hours)} hour</div>
-                <div className="clock-minutes">{this.addZero(this.state.minutes)} minute</div>
-                <div className="clock-seconds">{this.addZero(this.state.seconds)} second</div>
-            </div>
+            <Container>
+                <ClockStyled>{this.state.days} day{this.state.days > 1 ? "s" : ""}</ClockStyled>
+                <ClockStyled>{this.addZero(this.state.hours)} hour</ClockStyled>
+                <ClockStyled>{this.addZero(this.state.minutes)} minute</ClockStyled>
+                <ClockStyled>{this.addZero(this.state.seconds)} second</ClockStyled>
+            </Container>
         )
     }
 }
