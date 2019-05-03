@@ -2,7 +2,8 @@ import React from 'react';
 import Clock from './Clock';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
-import Datepicker from './Datepicker/Datepicker'
+import Datepicker from './DatePicker/Datepicker';
+import { MonthNames } from './DatePicker/Helper';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -32,42 +33,32 @@ const TitleStyled = styled.section`
     text-align: center;
     font-size: 40px;
 `
-const Button = styled.button`
-    width: 50px;
-    height: 50px;
-    max-width: 50vw;
-    max-height: 50vw;
-    border-radius: 50%;
-    border: 3px solid #23e7c0;
-    color: #23e7c0;
-    background: transparent;
-    margin: 20px;
-    font-size: 45px;
-    line-height: 45px;
-    transition: background 0.2s ease;
-    cursor: pointer;
-
-    &:hover{
-        background: #ffffff;
-    }
-`
 
 class App extends React.Component {
     constructor(props) {
         super(props);
+
+        this.changeDeadline = this.changeDeadline.bind(this);
+
         this.state = {
             deadline: '',
             newDeadline: ''
         }
     }
 
-    changeDeadline() {
+    changeDeadline(newDate){
         this.setState({
-            deadline: this.state.newDeadline
+            deadline: MonthNames[newDate.getMonth()]+" "+newDate.getDate()+", "+newDate.getFullYear()
         });
-    }
+      }
 
     render() {
+        const DatepickerData = {
+            value: '+',
+            function : this.changeDeadline,
+            date: this.state.deadline=='' ? new Date() : this.state.deadline
+        };
+
         return(
             <AppStyled>
                 <GlobalStyle/>
@@ -77,8 +68,7 @@ class App extends React.Component {
                 </Top>
                 <Bottom>
                     {/*<input placeholder = "new date" onChange={e => this.setState({newDeadline: e.target.value})}/>*/}
-                    <Button onClick={() => this.changeDeadline()}>+</Button>
-                    <Datepicker label="Birthday" value="2000-08-15" />
+                    <Datepicker {...DatepickerData}/>
                 </Bottom>
             </AppStyled>
         )

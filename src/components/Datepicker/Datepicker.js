@@ -1,85 +1,220 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Calendar from "./Calendar";
-import * as Styled from "./datepickerStyling";
-import { isDate, getDateISO } from "../../helpers/calendar";
+import React from 'react';
+import styled from 'styled-components';
+import DatepickerMonth from './DatepickerMonth';
+import {MonthNames} from './Helper'; 
+
+const DatepickerContainer = styled.div`
+`;
+
+const HeaderRow = styled.div`
+    font-weight: ${(props) => props.centered ? "normal" : "bold"};
+    text-align: center;
+    font-size: ${(props) => props.centered ? "1em" : "1.2em"};
+    display: flex;
+    flex-direction: row;
+    justify-content: ${(props) => props.centered ? "center" : "space-between"};
+    align-items: center;
+    line-height: 1.5em;
+`;
+
+const Container = styled.div`
+  padding: 15px;
+  color: #15bfea;
+  background: #21262d; 
+  width: 100%;
+  max-width: 300px;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100vh / 2 - 170px);
+  margin: auto;
+  box-shadow: 0 5px 29px 0px rgba(0,0,0,0.2),0 40px 50px -50px rgba(0,0,0,0.3);
+`;
+const DateButton = styled.button`
+width: 50px;
+height: 50px;
+max-width: 50vw;
+max-height: 50vw;
+border-radius: 50%;
+border: 3px solid #23e7c0;
+color: #23e7c0;
+background: transparent;
+margin: 20px;
+font-size: 45px;
+line-height: 45px;
+transition: background 0.2s ease;
+cursor: pointer;
+
+&:hover{
+    background: #ffffff;
+}
+`;
+const Overlay = styled.div`
+  background: rgba(0,0,0,0.8);
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const PreviousArrow = styled.div`
+  width: 0;
+  height: 0;
+  border: solid transparent;
+  border-color: rgba(136, 183, 213, 0);
+  border-right-color: rgba(136, 183, 213, 0.3);
+  border-width: 8px;
+  cursor: pointer;
+  margin: ${(props) => props.centered ? "0 15px" : "0"};
+
+  :hover{
+    border-right-color: rgba(136, 183, 213, 0.8);
+  }
+`;
+
+const NextArrow = styled.div`
+  width: 0;
+  height: 0;
+  border: solid transparent;
+  border-left-color: rgba(136, 183, 213, 0.3);
+  border-width: 8px;
+  cursor: pointer;
+  margin: ${(props) => props.centered ? "0 15px" : "0"};
+
+  :hover{
+    border-left-color: rgba(136, 183, 213, 0.8);
+  }
+`;
+
+
 
 class Datepicker extends React.Component {
-  state = { date: null, calendarOpen: false };
+    constructor(props){
+        super(props);
 
-  toggleCalendar = () =>
-    this.setState({ calendarOpen: !this.state.calendarOpen });
+        this.state = {
+            isOpen : false,
+            currentDate   : this.props.date,
+            oldDate: new Date(this.props.date)
+        }
 
-  handleChange = evt => evt.preventDefault();
+        this.switchState = this.switchState.bind(this);
+        this.changeDate = this.changeDate.bind(this);
+        this.changeOldDate = this.changeOldDate.bind(this);
+        this.handleNextMonthClick = this.handleNextMonthClick.bind(this);
+        this.handleNextYearClick = this.handleNextYearClick.bind(this);
+        this.handlePrevMonthClick = this.handlePrevMonthClick.bind(this);
+        this.handlePrevYearClick = this.handlePrevYearClick.bind(this);
+    }
 
-  handleDateChange = date => {
-    const { onDateChanged } = this.props;
-    const { date: currentDate } = this.state;
-    const newDate = date ? getDateISO(date) : null;
+    switchState(){
+        this.setState({
+            isOpen : !this.state.isOpen
+        })
+    }
 
-    currentDate !== newDate &&
-      this.setState({ date: newDate, calendarOpen: false }, () => {
-        typeof onDateChanged === "function" && onDateChanged(this.state.date);
-      });
-  };
+    changeOldDate(date){
+        this.setState({
+            oldDate : date
+        })
+    }
 
-  componentDidMount() {
-    const { value: date } = this.props;
-    const newDate = date && new Date(date);
+    handlePrevMonthClick(){
+        const param = {
+            incr : false,
+            obj  : "month"
+        }
 
-    isDate(newDate) && this.setState({ date: getDateISO(newDate) });
-  }
+        this.changeDate(param);
+    }
 
-  componentDidUpdate(prevProps) {
-    const { value: date } = this.props;
-    const { value: prevDate } = prevProps;
-    const dateISO = getDateISO(new Date(date));
-    const prevDateISO = getDateISO(new Date(prevDate));
+    handleNextMonthClick(){
+        const param = {
+            incr : true,
+            obj  : "month"
+        }
 
-    dateISO !== prevDateISO && this.setState({ date: dateISO });
-  }
+        this.changeDate(param);
+    }
 
-  render() {
-    const { label } = this.props;
-    const { date, calendarOpen } = this.state;
+    handlePrevYearClick(){
+        const param = {
+            incr : false,
+            obj  : "year"
+        }
 
-    return (
-      <Styled.DatePickerContainer>
-        <Styled.DatePickerFormGroup>
-          <Styled.DatePickerLabel>{label}</Styled.DatePickerLabel>
-          <Styled.DatePickerInput
-            type="text"
-            value={date ? date.split("-").join(" / ") : ""}
-            onChange={this.handleChange}
-            readOnly="readonly"
-            placeholder="YYYY / MM / DD"
-          />
-        </Styled.DatePickerFormGroup>
+        this.changeDate(param);
+    }
 
-        <Styled.DatePickerDropdown
-          isOpen={calendarOpen}
-          toggle={this.toggleCalendar}
-        >
-          <Styled.DatePickerDropdownToggle color="transparent" />
+    handleNextYearClick(){
+        const param = {
+            incr : true,
+            obj  : "year"
+        }
 
-          <Styled.DatePickerDropdownMenu>
-            {calendarOpen && (
-              <Calendar
-                date={date && new Date(date)}
-                onDateChanged={this.handleDateChange}
-              />
-            )}
-          </Styled.DatePickerDropdownMenu>
-        </Styled.DatePickerDropdown>
-      </Styled.DatePickerContainer>
-    );
-  }
+        this.changeDate(param);
+    }
+
+    changeDate(param){
+
+        let newDate = this.state.currentDate;
+
+        if(param.incr){
+            
+            switch(param.obj){
+                case "month" : newDate.setMonth(newDate.getMonth() + 1);
+                               break;
+                case "year"  : newDate.setYear(newDate.getFullYear() + 1);
+                               break;
+            }
+        }else{
+            
+            switch(param.obj){
+                case "month" : newDate.setMonth(newDate.getMonth() - 1);
+                               break;
+                case "year"  : newDate.setYear(newDate.getFullYear() - 1);
+                               break;
+            }
+        }
+
+        this.setState({
+            currentDate : newDate
+        });
+    }
+
+
+    render() {
+        const MonthData = {
+            date         : this.state.currentDate,
+            function     : this.props.function,
+            closeCalendar: this.switchState,
+            changeOldDate: this.changeOldDate,
+            oldDate      : this.state.oldDate
+        };
+        
+        const DatepickerDiv = this.state.isOpen &&  <div><Overlay onClick={this.switchState}></Overlay>
+                                            <Container><HeaderRow centered><PreviousArrow centered onClick={this.handlePrevYearClick}></PreviousArrow>
+                                            {MonthData.date.getFullYear()}<NextArrow centered onClick={this.handleNextYearClick}></NextArrow></HeaderRow>
+                                          <HeaderRow><PreviousArrow onClick={this.handlePrevMonthClick}></PreviousArrow>
+                                          {MonthNames[MonthData.date.getMonth()]}
+                                          <NextArrow onClick={this.handleNextMonthClick}></NextArrow></HeaderRow>
+                                        <DatepickerMonth  {...MonthData}/>
+                                      </Container></div>;
+                            
+        return(
+            <DatepickerContainer className="date-picker">
+                <DateButton onClick={this.switchState}>{this.props.value}</DateButton>
+                {DatepickerDiv}
+            </DatepickerContainer>
+        )
+    }
 }
-
-Datepicker.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.string,
-  onDateChanged: PropTypes.func
-};
 
 export default Datepicker;
