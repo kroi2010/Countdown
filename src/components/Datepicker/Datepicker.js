@@ -46,9 +46,18 @@ font-size: 45px;
 line-height: 45px;
 transition: background 0.2s ease;
 cursor: pointer;
+transition: transform 0.1s;
 
 &:hover{
     background: #ffffff;
+}
+
+&:active{
+    transform: scale(0.8);
+}
+
+&:focus{
+    outline: 0;
 }
 `;
 const Overlay = styled.div`
