@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
 import Datepicker from './DatePicker/Datepicker';
 import { MonthNames } from './DatePicker/Helper';
+import CountdownElement from './CountdownElement/CountdownElement';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -11,6 +12,13 @@ const GlobalStyle = createGlobalStyle`
     width: 100vw;
     height: 100vh;
     margin: 0;
+    & * {
+        //font-family: Segoe UI;
+    }
+
+    & button:focus {
+        outline: 0;
+    }
   }
  `
 const AppStyled = styled.section`
@@ -27,22 +35,29 @@ const Top = styled.section`
     justify-content: flex-end;
 `
 const Bottom = styled.section`
-    
+    width: 100%;
+    padding-top: 20px;
 `
 const TitleStyled = styled.section`
     text-align: center;
     font-size: 40px;
 `
-
+const CountdownContainer = styled.section`
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+`
 class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this.changeDeadline = this.changeDeadline.bind(this);
+        this.addNewCountdown = this.addNewCountdown.bind(this);
 
         this.state = {
-            deadline: '',
-            newDeadline: ''
+            countdownElements: [],
+            selectedElement: null
         }
     }
 
@@ -52,23 +67,51 @@ class App extends React.Component {
         });
       }
 
+    addNewCountdown(name, deadline){
+        const newCountdown = {
+            name,
+            deadline
+        }
+        this.setState({
+            countdownElements: [...this.state.countdownElements, newCountdown],
+            selectedElement: newCountdown
+        });
+    } 
+
+    selectCountdownElement(index) {
+        if(!this.state.countdownElements.length > index+1){
+            this.setState({selectedElement: this.state.countdownElements[index]})
+        }
+    }
+
+    displayHeaderMsg = () => (this.state.selectedElement!==null) ? 'Countdown to ' + MonthNames[this.state.selectedElement.deadline.getMonth()]+" "+this.state.selectedElement.deadline.getDate()+", "+this.state.selectedElement.deadline.getFullYear() : 'Please, add new countdown:';
+
+    renderSubText = () => (this.state.selectedElement!==null) ? <Clock deadline={this.state.selectedElement.deadline}/> : null;
+
     render() {
         const DatepickerData = {
             value: '+',
-            function : this.changeDeadline,
-            date: this.state.deadline=='' ? new Date() : this.state.deadline
+            function : this.addNewCountdown,
+            date: this.state.selectedElement===null ? new Date() : this.state.selectedElement.deadline,
+            buttonTheme: 'round'
         };
+
+        const countdownElements = this.state.countdownElements;
 
         return(
             <AppStyled>
                 <GlobalStyle/>
                 <Top>
-                    <TitleStyled>Countdown to {this.state.deadline}</TitleStyled>
-                    <Clock deadline={this.state.deadline}/>
+                    <TitleStyled>{this.displayHeaderMsg()}</TitleStyled>
+                    {this.renderSubText()}
                 </Top>
                 <Bottom>
-                    {/*<input placeholder = "new date" onChange={e => this.setState({newDeadline: e.target.value})}/>*/}
                     <Datepicker {...DatepickerData}/>
+                    <CountdownContainer>
+                    {countdownElements.length ? countdownElements.map((countdown) => (
+                        <CountdownElement name={countdown.name} date={countdown.deadline}/>
+                    )) : null}
+                    </CountdownContainer>
                 </Bottom>
             </AppStyled>
         )

@@ -2,8 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import DatepickerMonth from './DatepickerMonth';
 import {MonthNames} from './Helper'; 
+import {NameField} from './NameField';
+import TimePicker from '../TimePicker/TimePicker';
 
 const DatepickerContainer = styled.div`
+    display: flex;
+    justify-content: center;
 `;
 
 const HeaderRow = styled.div`
@@ -33,20 +37,20 @@ const Container = styled.div`
   box-shadow: 0 5px 29px 0px rgba(0,0,0,0.2),0 40px 50px -50px rgba(0,0,0,0.3);
 `;
 const DateButton = styled.button`
-width: 50px;
+width: ${props => props.theme == 'round' ? '50px' : '100%'};
 height: 50px;
 max-width: 50vw;
 max-height: 50vw;
-border-radius: 50%;
+border-radius: ${props => props.theme == 'round' ? '50%' : '5px'};
 border: 3px solid #23e7c0;
 color: #23e7c0;
 background: transparent;
-margin: 20px;
-font-size: 45px;
+font-size: ${props => props.theme == 'round' ? '45px' : '18px'};
 line-height: 45px;
 transition: background 0.2s ease;
 cursor: pointer;
 transition: transform 0.1s;
+margin: 0 30px;
 
 &:hover{
     background: #ffffff;
@@ -54,10 +58,6 @@ transition: transform 0.1s;
 
 &:active{
     transform: scale(0.8);
-}
-
-&:focus{
-    outline: 0;
 }
 `;
 const Overlay = styled.div`
@@ -207,19 +207,26 @@ class Datepicker extends React.Component {
             changeOldDate: this.changeOldDate,
             oldDate      : this.state.oldDate
         };
-        
+
+        const TimepickerData = {
+            buttonValue : 'Add Time'
+        };    
+
         const DatepickerDiv = this.state.isOpen &&  <div><Overlay onClick={this.switchState}></Overlay>
-                                            <Container><HeaderRow centered><PreviousArrow centered onClick={this.handlePrevYearClick}></PreviousArrow>
+                                            <Container>
+                                            <NameField/>
+                                            <HeaderRow centered><PreviousArrow centered onClick={this.handlePrevYearClick}></PreviousArrow>
                                             {MonthData.date.getFullYear()}<NextArrow centered onClick={this.handleNextYearClick}></NextArrow></HeaderRow>
                                           <HeaderRow><PreviousArrow onClick={this.handlePrevMonthClick}></PreviousArrow>
                                           {MonthNames[MonthData.date.getMonth()]}
                                           <NextArrow onClick={this.handleNextMonthClick}></NextArrow></HeaderRow>
                                         <DatepickerMonth  {...MonthData}/>
+                                        <TimePicker {...TimepickerData}/>
                                       </Container></div>;
-                            
+                        
         return(
             <DatepickerContainer className="date-picker">
-                <DateButton onClick={this.switchState}>{this.props.value}</DateButton>
+                <DateButton theme={this.props.buttonTheme} onClick={this.switchState}>{this.props.value}</DateButton>
                 {DatepickerDiv}
             </DatepickerContainer>
         )

@@ -31,7 +31,7 @@ export default function DatepickerDay({date, selected, onDayClick, closeCalendar
     }else{
         if(date){
             return <DayButton onClick={() => {
-                onDayClick(date);
+                onDayClick('New Countdown', date);
                 closeCalendar();
                 changeOldDate(date)
             }}>{date.getDate()}</DayButton>
