@@ -101,7 +101,62 @@ const NextArrow = styled.div`
     border-left-color: rgba(136, 183, 213, 0.8);
   }
 `;
+const ConfirmButtonHolderStyled = styled.div`
+    width: 100%;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+`;
+const CancelButtonStyled = styled.button`
+    width: 100%;
+    color: #15bfea;
+    font-weight: bold;
+    line-height: 33px;
+    letter-spacing: 1px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
 
+    &::before{
+        position: absolute;
+        content: '';
+        width: 1px;
+        background-color: #15bfea;
+        height: 0;
+        transition: height 1s;
+        top: 0;
+        left: 50%;
+    }
+    
+    &::after{
+
+    }
+    &:hover{
+        width: 50%;
+        &::before{
+            height: 35px;
+        }
+    }
+`;
+const DummyButton = styled.button`
+    width: 100%;
+    background: transparent;
+    border-radius: 5px;
+    position: absolute;
+    border: 1px solid #15bfea;
+    height: 35px;
+    pointer-events: none;
+`;
+const ConfirmButtonStyled = styled.button`
+    background: transparent;
+    border: none;
+    color: transparent;
+    margin-left: auto;
+    padding: 0;
+    width: 0;
+    cursor: pointer;
+`;
 
 
 class Datepicker extends React.Component {
@@ -222,6 +277,11 @@ class Datepicker extends React.Component {
                                           <NextArrow onClick={this.handleNextMonthClick}></NextArrow></HeaderRow>
                                         <DatepickerMonth  {...MonthData}/>
                                         <TimePicker {...TimepickerData}/>
+                                        <ConfirmButtonHolderStyled>
+                                        <DummyButton></DummyButton>
+                                        <CancelButtonStyled>Cancel</CancelButtonStyled>
+                                        <ConfirmButtonStyled>Start Countdown!</ConfirmButtonStyled>
+                                        </ConfirmButtonHolderStyled>
                                       </Container></div>;
                         
         return(

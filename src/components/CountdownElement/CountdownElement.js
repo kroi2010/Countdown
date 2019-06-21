@@ -12,6 +12,11 @@ margin: 20px;
 overflow: hidden;
 box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 padding-bottom: 30px;
+cursor: pointer;
+transition: transform 0.1s;
+&:active{
+    transform: scale(0.9);
+}
 `;
 const TitleStyled = styled.p`
     text-align: center;

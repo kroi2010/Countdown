@@ -13,7 +13,7 @@ const WeekdayContainer = styled.div`
 const Week = styled.div`
     display: flex;
 
-    :last-child{
+    &:last-of-type{
         border-bottom: 1px solid #15bfea;
    }
 `;
@@ -49,7 +49,7 @@ class DatepickerMonth extends React.Component {
         const weeks = getWeeksForMonth(this.props.date.getMonth(), this.props.date.getFullYear());
         const WeeksMarkup = weeks.map((week, index) => {
             return(
-                <Week role="row" key={index}>{week.map(this.renderWeek)}</Week>
+                <Week className="row" key={index}>{week.map(this.renderWeek)}</Week>
             )
             });
         return (<React.Fragment>
